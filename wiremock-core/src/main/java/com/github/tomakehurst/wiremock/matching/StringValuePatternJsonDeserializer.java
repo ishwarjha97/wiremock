@@ -309,6 +309,12 @@ public class StringValuePatternJsonDeserializer extends JsonDeserializer<StringV
         fromNullableTextNode(rootNode.findValue("placeholderOpeningDelimiterRegex"));
     String placeholderClosingDelimiterRegex =
         fromNullableTextNode(rootNode.findValue("placeholderClosingDelimiterRegex"));
+    String placeholderArgsOpeningDelimiterRegex =
+        fromNullableTextNode(rootNode.findValue("placeholderArgsOpeningDelimiterRegex"));
+    String placeholderArgsClosingDelimiterRegex =
+        fromNullableTextNode(rootNode.findValue("placeholderArgsClosingDelimiterRegex"));
+    String placeholderArgsSeparatorRegex =
+        fromNullableTextNode(rootNode.findValue("placeholderArgsSeparatorRegex"));
     Set<ComparisonType> exemptedComparisons =
         comparisonTypeSetFromArray(rootNode.findValue("exemptedComparisons"));
     Boolean ignoreOrderOfSameNode = fromNullable(rootNode.findValue("ignoreOrderOfSameNode"));
@@ -319,6 +325,9 @@ public class StringValuePatternJsonDeserializer extends JsonDeserializer<StringV
         enablePlaceholders,
         placeholderOpeningDelimiterRegex,
         placeholderClosingDelimiterRegex,
+        placeholderArgsOpeningDelimiterRegex,
+        placeholderArgsClosingDelimiterRegex,
+        placeholderArgsSeparatorRegex,
         exemptedComparisons,
         ignoreOrderOfSameNode,
         namespaceAwareness);
