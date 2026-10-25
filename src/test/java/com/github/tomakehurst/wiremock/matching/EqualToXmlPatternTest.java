@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2025 Thomas Akehurst
+ * Copyright (C) 2016-2026 Thomas Akehurst
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -373,6 +373,125 @@ public class EqualToXmlPatternTest {
 
     assertTrue(matchResult.isExactMatch());
     assertThat(matchResult.getDistance(), is(0.0));
+  }
+
+  @Test
+  public void matchesWithCustomPlaceholderArgsSeparator() {
+    String expectedXml = "<a>${xmlunit.matchesRegex(ba{2,4})}</a>";
+    String actualXml = "<a>baaa</a>";
+    EqualToXmlPattern pattern =
+        new EqualToXmlPattern(
+            expectedXml,
+            true,
+            null,
+            null,
+            null,
+            null,
+            ";",
+            null,
+            false,
+            EqualToXmlPattern.NamespaceAwareness.LEGACY);
+    MatchResult matchResult = pattern.match(actualXml);
+
+    assertTrue(matchResult.isExactMatch());
+    assertThat(matchResult.getDistance(), is(0.0));
+  }
+
+  @Test
+  public void doesNotMatchArgsContainingCommaWithDefaultArgsSeparator() {
+    String expectedXml = "<a>${xmlunit.matchesRegex(ba{2,4})}</a>";
+    String actualXml = "<a>baaa</a>";
+    EqualToXmlPattern pattern =
+        new EqualToXmlPattern(
+            expectedXml,
+            true,
+            null,
+            null,
+            null,
+            false,
+            EqualToXmlPattern.NamespaceAwareness.LEGACY);
+
+    assertFalse(pattern.match(actualXml).isExactMatch());
+  }
+
+  @Test
+  public void matchesWithCustomPlaceholderArgsDelimiters() {
+    String expectedXml = "<a>${xmlunit.matchesRegex#[[0-9()]+]#}</a>";
+    String actualXml = "<a>1(2)3</a>";
+    EqualToXmlPattern pattern =
+        new EqualToXmlPattern(
+            expectedXml,
+            true,
+            null,
+            null,
+            "#\\[",
+            "]#",
+            null,
+            null,
+            false,
+            EqualToXmlPattern.NamespaceAwareness.LEGACY);
+    MatchResult matchResult = pattern.match(actualXml);
+
+    assertTrue(matchResult.isExactMatch());
+    assertThat(matchResult.getDistance(), is(0.0));
+  }
+
+  @Test
+  public void doesNotMatchArgsContainingParenthesesWithDefaultArgsDelimiters() {
+    String expectedXml = "<a>${xmlunit.matchesRegex#[[0-9()]+]#}</a>";
+    String actualXml = "<a>1(2)3</a>";
+    EqualToXmlPattern pattern =
+        new EqualToXmlPattern(
+            expectedXml,
+            true,
+            null,
+            null,
+            null,
+            false,
+            EqualToXmlPattern.NamespaceAwareness.LEGACY);
+
+    assertFalse(pattern.match(actualXml).isExactMatch());
+  }
+
+  @Test
+  public void deserializesEqualToXmlWithPlaceholderArgsSettings() {
+    String patternJson =
+        "{"
+            + "\"equalToXml\" : \"<a/>\", "
+            + "\"enablePlaceholders\" : true, "
+            + "\"placeholderArgsOpeningDelimiterRegex\" : \"<<\", "
+            + "\"placeholderArgsClosingDelimiterRegex\" : \">>\", "
+            + "\"placeholderArgsSeparatorRegex\" : \";\""
+            + " }";
+    StringValuePattern stringValuePattern = Json.read(patternJson, StringValuePattern.class);
+
+    EqualToXmlPattern equalToXmlPattern =
+        assertInstanceOf(EqualToXmlPattern.class, stringValuePattern);
+    assertThat(equalToXmlPattern.getPlaceholderArgsOpeningDelimiterRegex(), is("<<"));
+    assertThat(equalToXmlPattern.getPlaceholderArgsClosingDelimiterRegex(), is(">>"));
+    assertThat(equalToXmlPattern.getPlaceholderArgsSeparatorRegex(), is(";"));
+  }
+
+  @Test
+  public void serializesEqualToXmlWithPlaceholderArgsSettings() {
+    StringValuePattern pattern =
+        new EqualToXmlPattern(
+            "<a/>",
+            true,
+            null,
+            null,
+            "<<",
+            ">>",
+            ";",
+            null,
+            false,
+            EqualToXmlPattern.NamespaceAwareness.LEGACY);
+
+    String json = Json.write(pattern);
+
+    assertThat(json, containsString("\"placeholderArgsOpeningDelimiterRegex\" : \"<<\""));
+    assertThat(json, containsString("\"placeholderArgsClosingDelimiterRegex\" : \">>\""));
+    assertThat(json, containsString("\"placeholderArgsSeparatorRegex\" : \";\""));
   }
 
   @Test
