@@ -61,6 +61,9 @@ public class EqualToXmlPattern extends StringValuePattern {
   private final Boolean enablePlaceholders;
   private final String placeholderOpeningDelimiterRegex;
   private final String placeholderClosingDelimiterRegex;
+  private final String placeholderArgsOpeningDelimiterRegex;
+  private final String placeholderArgsClosingDelimiterRegex;
+  private final String placeholderArgsSeparatorRegex;
   private final DifferenceEvaluator diffEvaluator;
   private final Set<ComparisonType> exemptedComparisons;
   private final Boolean ignoreOrderOfSameNode;
@@ -79,12 +82,38 @@ public class EqualToXmlPattern extends StringValuePattern {
     this(expectedValue, enablePlaceholders, null, null, null, ignoreOrderOfSameNode, null);
   }
 
+  public EqualToXmlPattern(
+      String expectedValue,
+      Boolean enablePlaceholders,
+      String placeholderOpeningDelimiterRegex,
+      String placeholderClosingDelimiterRegex,
+      Set<ComparisonType> exemptedComparisons,
+      Boolean ignoreOrderOfSameNode,
+      NamespaceAwareness namespaceAwareness) {
+    this(
+        expectedValue,
+        enablePlaceholders,
+        placeholderOpeningDelimiterRegex,
+        placeholderClosingDelimiterRegex,
+        null,
+        null,
+        null,
+        exemptedComparisons,
+        ignoreOrderOfSameNode,
+        namespaceAwareness);
+  }
+
   @JsonCreator
   public EqualToXmlPattern(
       @JsonProperty("equalToXml") String expectedValue,
       @JsonProperty("enablePlaceholders") Boolean enablePlaceholders,
       @JsonProperty("placeholderOpeningDelimiterRegex") String placeholderOpeningDelimiterRegex,
       @JsonProperty("placeholderClosingDelimiterRegex") String placeholderClosingDelimiterRegex,
+      @JsonProperty("placeholderArgsOpeningDelimiterRegex")
+          String placeholderArgsOpeningDelimiterRegex,
+      @JsonProperty("placeholderArgsClosingDelimiterRegex")
+          String placeholderArgsClosingDelimiterRegex,
+      @JsonProperty("placeholderArgsSeparatorRegex") String placeholderArgsSeparatorRegex,
       @JsonProperty("exemptedComparisons") Set<ComparisonType> exemptedComparisons,
       @JsonProperty("ignoreOrderOfSameNode") Boolean ignoreOrderOfSameNode,
       @JsonProperty("namespaceAwareness") NamespaceAwareness namespaceAwareness) {
@@ -96,6 +125,9 @@ public class EqualToXmlPattern extends StringValuePattern {
     this.enablePlaceholders = enablePlaceholders;
     this.placeholderOpeningDelimiterRegex = placeholderOpeningDelimiterRegex;
     this.placeholderClosingDelimiterRegex = placeholderClosingDelimiterRegex;
+    this.placeholderArgsOpeningDelimiterRegex = placeholderArgsOpeningDelimiterRegex;
+    this.placeholderArgsClosingDelimiterRegex = placeholderArgsClosingDelimiterRegex;
+    this.placeholderArgsSeparatorRegex = placeholderArgsSeparatorRegex;
     this.exemptedComparisons = exemptedComparisons;
     this.ignoreOrderOfSameNode = ignoreOrderOfSameNode;
     this.namespaceAwareness = namespaceAwareness;
@@ -115,7 +147,11 @@ public class EqualToXmlPattern extends StringValuePattern {
           DifferenceEvaluators.chain(
               baseDifferenceEvaluator,
               new PlaceholderDifferenceEvaluator(
-                  placeholderOpeningDelimiterRegex, placeholderClosingDelimiterRegex));
+                  placeholderOpeningDelimiterRegex,
+                  placeholderClosingDelimiterRegex,
+                  placeholderArgsOpeningDelimiterRegex,
+                  placeholderArgsClosingDelimiterRegex,
+                  placeholderArgsSeparatorRegex));
     } else {
       diffEvaluator = baseDifferenceEvaluator;
     }
@@ -150,6 +186,18 @@ public class EqualToXmlPattern extends StringValuePattern {
 
   public String getPlaceholderClosingDelimiterRegex() {
     return placeholderClosingDelimiterRegex;
+  }
+
+  public String getPlaceholderArgsOpeningDelimiterRegex() {
+    return placeholderArgsOpeningDelimiterRegex;
+  }
+
+  public String getPlaceholderArgsClosingDelimiterRegex() {
+    return placeholderArgsClosingDelimiterRegex;
+  }
+
+  public String getPlaceholderArgsSeparatorRegex() {
+    return placeholderArgsSeparatorRegex;
   }
 
   public Set<ComparisonType> getExemptedComparisons() {
@@ -306,6 +354,9 @@ public class EqualToXmlPattern extends StringValuePattern {
         enablePlaceholders,
         placeholderOpeningDelimiterRegex,
         placeholderClosingDelimiterRegex,
+        placeholderArgsOpeningDelimiterRegex,
+        placeholderArgsClosingDelimiterRegex,
+        placeholderArgsSeparatorRegex,
         new HashSet<>(Arrays.asList(comparisons)),
         ignoreOrderOfSameNode,
         namespaceAwareness);
@@ -317,6 +368,9 @@ public class EqualToXmlPattern extends StringValuePattern {
         enablePlaceholders,
         placeholderOpeningDelimiterRegex,
         placeholderClosingDelimiterRegex,
+        placeholderArgsOpeningDelimiterRegex,
+        placeholderArgsClosingDelimiterRegex,
+        placeholderArgsSeparatorRegex,
         exemptedComparisons,
         ignoreOrderOfSameNode,
         namespaceAwareness);
